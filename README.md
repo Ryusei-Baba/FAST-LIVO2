@@ -58,43 +58,30 @@ OpenCV>=3.2, Follow [Opencv Installation](http://opencv.org/).
 
 ### 2.3 Sophus
 
-Sophus Installation for the non-templated/double-only version.
-
+#### Binary installation
 ```bash
+sudo apt install ros-$ROS_DISTRO-sophus
+```
+#### Building from source
+Sophus Installation for the non-templated/double-only version.
+```bash
+mkdir -p fast_ws/src && cd fast_ws/src
 git clone https://github.com/strasdat/Sophus.git
 cd Sophus
-git checkout a621ff
-mkdir build && cd build && cmake ..
-make
+git checkout 1.22.10
+mkdir build && cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release
+make -j$(nproc)
 sudo make install
-```
-
-if build fails due to `so2.cpp:32:26: error: lvalue required as left operand of assignment`, modify the code as follows:
-
-**so2.cpp**
-```diff
-namespace Sophus
-{
-
-SO2::SO2()
-{
--  unit_complex_.real() = 1.;
--  unit_complex_.imag() = 0.;
-+  unit_complex_.real(1.);
-+  unit_complex_.imag(0.);
-}
 ```
 
 ### 2.4 Vikit
 
-Vikit contains camera models, some math and interpolation functions that we need. Vikit is a catkin project, therefore, download it into your catkin workspace source folder.
-
-For well-known reasons, ROS2 does not have a direct global parameter server and a simple method to obtain the corresponding parameters. For details, please refer to https://discourse.ros.org/t/ros2-global-parameter-server-status/10114/11. I use a special way to get camera parameters in Vikit. While the method I've provided so far is quite simple and not perfect, it meets my needs. More contributions to improve `rpg_vikit` are hoped.
-
+Vikit contains camera models, some math and interpolation functions that we need.
 ```bash
 # Different from the one used in fast-livo1
 cd fast_ws/src
-git clone https://github.com/Robotic-Developer-Road/rpg_vikit.git 
+git clone https://github.com/integralrobotics/rpg_vikit.git
 ```
 
 Thanks to the following repositories for the code reference:
@@ -115,7 +102,7 @@ Clone the repository and colcon build:
 
 ```
 cd ~/fast_ws/src
-git clone https://github.com/Robotic-Developer-Road/FAST-LIVO2.git
+git clone https://github.com/Ryusei-Baba/FAST-LIVO2.git
 cd ../
 colcon build --symlink-install --continue-on-error
 source ~/fast_ws/install/setup.bash
