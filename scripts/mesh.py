@@ -7,7 +7,7 @@ from scipy.spatial import KDTree
 
 # ------------------------- Key Parameters -------------------------
 # Dataset path
-SOURCE_DIR = "/home/chunran/Downloads/"  # Replace with your dataset path
+SOURCE_DIR = "/home/ryusei22/orne_ws/src/FAST-LIVO2/Log/PCD"  # Replace with your dataset path
 
 # VDBVolume parameters
 VOXEL_SIZE = 0.02  # Voxel size (smaller values increase precision but require more memory)

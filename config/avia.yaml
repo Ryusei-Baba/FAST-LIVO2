@@ -1,91 +1,85 @@
-/**:
-  ros__parameters:
+common:
+  img_topic: "/left_camera/image"
+  lid_topic: "/livox/lidar"
+  imu_topic: "/livox/imu"
+  img_en: 1
+  lidar_en: 1
+  ros_driver_bug_fix: false
 
-    common:
-      img_topic: "/image_raw"  # カメラのトピック名
-      lid_topic: "/livox/lidar"  # LiDARのトピック名
-      imu_topic: "/livox/imu"  # IMUのトピック名
-      img_en: 1  # カメラを使用する場合は1、有効化
-      lidar_en: 1  # LiDARを使用する場合は1、有効化
-      ros_driver_bug_fix: false  # ROSドライバの不具合修正を行う場合はtrue
+extrin_calib:
+  extrinsic_T: [0.04165, 0.02326, -0.0284]
+  extrinsic_R: [1, 0, 0, 0, 1, 0, 0, 0, 1]
+  Rcl: [0.00610193,-0.999863,-0.0154172,
+        -0.00615449,0.0153796,-0.999863,
+        0.999962,0.00619598,-0.0060598] 
+  Pcl: [0.0194384, 0.104689,-0.0251952]
 
-    extrin_calib:  # 外部キャリブレーションパラメータ（IMU ↔︎ カメラ or LiDAR）
-      extrinsic_T: [0.04165, 0.02326, -0.0284]  # 並進ベクトル（メートル単位）
-      extrinsic_R: [1.0, 0.0, 0.0,             # 回転行列（3x3）
-                    0.0, 1.0, 0.0,
-                    0.0, 0.0, 1.0]
-      Rcl: [0.00610193,-0.999863,-0.0154172,   # カメラからLiDARへの回転
-            -0.00615449,0.0153796,-0.999863,
-            0.999962,0.00619598,-0.0060598] 
-      Pcl: [0.0194384, 0.104689, -0.0251952]   # カメラからLiDARへの並進
+time_offset: 
+  imu_time_offset: 0.0
+  img_time_offset: 0.1
+  exposure_time_init: 0.0
 
-    time_offset:  # 時刻オフセットの補正
-      imu_time_offset: 0.0     # IMUデータの時刻補正（秒）
-      img_time_offset: 0.1     # カメラデータの時刻補正（秒）
-      exposure_time_init: 0.0  # 初期露光時間（秒）
+preprocess:
+  point_filter_num: 1
+  filter_size_surf: 0.1
+  lidar_type: 1 # Livox Avia LiDAR
+  scan_line: 6
+  blind: 0.8
 
-    preprocess:  # LiDAR前処理の設定
-      point_filter_num: 1  # 点群のフィルタ方法（1: 点数による, 0: 距離による）
-      filter_size_surf: 0.1  # 平面フィルタのサイズ
-      lidar_type: 1  # 使用するLiDARのタイプ（1: Livox Avia）
-      scan_line: 6  # スキャンライン数（固定値）
-      blind: 0.8  # 近距離フィルタの閾値（メートル）
+vio:
+  max_iterations: 5
+  outlier_threshold: 1000 # 78 100 156 #100 200 500 700 infinite
+  img_point_cov: 100 # 100 1000 
+  patch_size: 8
+  patch_pyrimid_level: 4
+  normal_en: true
+  raycast_en: false
+  inverse_composition_en: false
+  exposure_estimate_en: true
+  inv_expo_cov: 0.1
 
-    vio:  # Visual-Inertial Odometry（VIO）の設定
-      max_iterations: 5  # 最適化の最大反復数
-      outlier_threshold: 1000  # 外れ値除去の閾値
-      img_point_cov: 100  # 画像特徴点の共分散
-      patch_size: 8  # 特徴点パッチのサイズ（ピクセル）
-      patch_pyrimid_level: 4  # ピラミッドレベル数
-      normal_en: true  # 法線ベクトルの使用有無
-      raycast_en: false  # レイキャストの使用有無
-      inverse_composition_en: false  # 逆構成法の有効化
-      exposure_estimate_en: true  # 露光時間の推定有無
-      inv_expo_cov: 0.1  # 逆露光時間の共分散
+imu:
+  imu_en: true
+  imu_int_frame: 30
+  acc_cov: 0.5 # 0.2
+  gyr_cov: 0.3 # 0.5
+  b_acc_cov: 0.0001 # 0.1
+  b_gyr_cov: 0.0001 # 0.1
 
-    imu:  # IMU関連パラメータ
-      imu_en: true  # IMU使用の有無
-      imu_int_frame: 30  # 積分フレーム間隔
-      acc_cov: 0.5  # 加速度の共分散
-      gyr_cov: 0.3  # ジャイロの共分散
-      b_acc_cov: 0.0001  # 加速度バイアスの共分散
-      b_gyr_cov: 0.0001  # ジャイロバイアスの共分散
+lio:
+  max_iterations: 5
+  dept_err: 0.02
+  beam_err: 0.05
+  min_eigen_value: 0.0025 # 0.005
+  voxel_size: 0.5
+  max_layer: 2
+  max_points_num: 50
+  layer_init_num: [5, 5, 5, 5, 5]
 
-    lio:  # LiDAR-Inertial Odometry（LIO）の設定
-      max_iterations: 5  # 最適化の最大反復数
-      dept_err: 0.02  # 深度誤差の許容値
-      beam_err: 0.05  # ビーム誤差の許容値
-      min_eigen_value: 0.0025  # 最小固有値の閾値
-      voxel_size: 0.5  # ボクセルグリッドのサイズ
-      max_layer: 2  # レイヤー数の最大値
-      max_points_num: 50  # 各レイヤー内の点数上限
-      layer_init_num: [5, 5, 5, 5, 5]  # 各レイヤーの初期点数
+local_map:  
+  map_sliding_en: false
+  half_map_size: 100
+  sliding_thresh: 8
 
-    local_map:  # ローカルマップ設定
-      map_sliding_en: false  # スライディングマップの有効化
-      half_map_size: 100  # マップサイズ（半径）
-      sliding_thresh: 8.0  # スライディングの閾値（メートル）
+uav:
+  imu_rate_odom: false
+  gravity_align_en: false
 
-    uav:  # UAV専用の設定
-      imu_rate_odom: false  # IMUレートでオドメトリ出力するか
-      gravity_align_en: false  # 重力方向への整列を行うか
+publish:
+  dense_map_en: true
+  pub_effect_point_en: false 
+  pub_plane_en: false
+  pub_scan_num: 1
+  blind_rgb_points: 0.0
 
-    publish:  # パブリッシュ関連の設定
-      dense_map_en: true  # 高密度マップを出力するか
-      pub_effect_point_en: false  # 有効点群の可視化を行うか
-      pub_plane_en: false  # 平面情報の可視化を行うか
-      pub_scan_num: 1  # 公開するスキャン数
-      blind_rgb_points: 0.0  # RGB点群でのblind範囲（0.0で制限なし）
+evo:
+  seq_name: "CBD_Building_01"
+  pose_output_en: false
 
-    evo:  # Evoツール（評価ツール）用の出力設定
-      seq_name: "CBD_Building_01"  # シーケンス名
-      pose_output_en: false  # ポーズ出力を行うか
-
-    pcd_save:  # PCDファイル出力の設定
-      pcd_save_en: true  # PCDファイル保存の有効化
-      pcd_save_path: "/tmp/pcd"  # PCDファイルの保存パス
-      pcd_save_name: "tsudanuma"  # PCDファイルの名前
-      colmap_output_en: false  # COLMAPフォーマットで出力（interval = -1が必要）
-      filter_size_pcd: 0.15  # PCD保存時のフィルタサイズ
-      interval: -1  # 何フレームごとにPCDを保存するか（-1は全フレームを1つに保存）
-      # interval = -1 の場合はすべてのフレームを1つのPCDファイルに保存するため、メモリオーバーフローに注意
+pcd_save:
+  pcd_save_en: false
+  colmap_output_en: false # need to set interval = -1
+  filter_size_pcd: 0.15
+  interval: -1
+  # how many LiDAR frames saved in each pcd file;
+  # -1 : all frames will be saved in ONE pcd file, may lead to memory crash when having too much frames.

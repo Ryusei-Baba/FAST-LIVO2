@@ -1,0 +1,89 @@
+/**:
+  ros__parameters:
+
+    common:
+      img_topic: "/zed_node/rgb/image_rect_color"  # カメラのトピック名
+      lid_topic: "/livox/lidar"  # LiDARのトピック名
+      imu_topic: "/livox/imu"  # IMUのトピック名
+      img_en: 1  # カメラを使用する場合は1、有効化
+      lidar_en: 1  # LiDARを使用する場合は1、有効化
+      ros_driver_bug_fix: false  # ROSドライバの不具合修正を行う場合はtrue
+
+    extrin_calib:  # 外部キャリブレーション（要実測値調整）
+      # IMU-LiDAR間の外部パラメータ（MID360では通常同一座標系）
+      extrinsic_T: [0.0, 0.0, 0.0]  # MID360ではIMUとLiDARが同一位置
+      extrinsic_R: [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0] 
+      # カメラ-LiDAR間の外部パラメータ（実測値）
+      Rcl: [0.00610193,-0.999863,-0.0154172,
+            -0.00615449,0.0153796,-0.999863,
+            0.999962,0.00619598,-0.0060598] 
+      Pcl: [0.11, 0.06, -0.07]          # 並進：ZEDがMID360より前に11cm、左に6cm、下に7cm
+
+    time_offset:  # 時刻同期の調整
+      imu_time_offset: 0.0
+      img_time_offset: 0.1   # ZEDの30FPSを考慮（1/30秒）
+      exposure_time_init: 0.0
+
+    preprocess:  # MID360に最適化
+      point_filter_num: 1
+      filter_size_surf: 0.1   # MID360の高密度点群に対応
+      lidar_type: 1            # Livox MID360
+      scan_line: 6
+      blind: 0.8
+
+    vio:  # ZEDカメラに最適化
+      max_iterations: 5        # ZEDの高解像度に対応して増加
+      outlier_threshold: 1000   # より厳しい外れ値除去
+      img_point_cov: 100        # ZEDの高品質画像に対応
+      patch_size: 8            # 高解像度に適したパッチサイズ
+      patch_pyrimid_level: 4   # ピラミッドレベル増加
+      normal_en: true
+      raycast_en: false         # 高密度点群で有効化
+      inverse_composition_en: false
+      exposure_estimate_en: true
+      inv_expo_cov: 0.1       # ZEDの自動露光に対応
+
+    imu:  # MID360 IMUに最適化
+      imu_en: true
+      imu_int_frame: 30        # MID360の高周波数IMU（200Hz）に対応
+      acc_cov: 0.5             # MID360 IMUの仕様に基づく調整
+      gyr_cov: 0.3             # MID360 IMUの仕様に基づく調整
+      b_acc_cov: 0.0001       # より小さなバイアス共分散
+      b_gyr_cov: 0.0001       # より小さなバイアス共分散
+
+    lio:  # MID360の高密度点群に最適化
+      max_iterations: 5        # 高密度点群のため増加
+      dept_err: 0.02         # MID360の高精度に対応
+      beam_err: 0.05           # より厳しい閾値
+      min_eigen_value: 0.0025   # 安定性向上
+      voxel_size: 0.5          # 高密度点群に適したボクセルサイズ
+      max_layer: 2             # レイヤー数増加
+      max_points_num: 50       # MID360の高密度点群に対応
+      layer_init_num: [5, 5, 5, 5, 5]  # 各レイヤーの初期点数増加
+
+    local_map:
+      map_sliding_en: false     # 高密度データのためスライディング有効化
+      half_map_size: 100        # マップサイズ調整
+      sliding_thresh: 8.0      # スライディング閾値調整
+
+    uav:
+      imu_rate_odom: false      # 高周波数IMUのため有効化
+      gravity_align_en: false   # 初期化安定性向上
+
+    publish:
+      dense_map_en: true
+      pub_effect_point_en: false    # デバッグ用に有効化
+      pub_plane_en: false           # 平面検出確認用
+      pub_scan_num: 1
+      blind_rgb_points: 0.0        # blind距離と同期
+
+    evo:
+      seq_name: "MID360_ZED_Test"  # 識別しやすい名前
+      pose_output_en: false         # 評価のため有効化
+
+    pcd_save:  # PCDファイル出力の設定
+      pcd_save_en: true  # PCDファイル保存の有効化
+      colmap_output_en: false  # COLMAPフォーマットで出力（interval = -1が必要）
+      filter_size_pcd: 0.1     # より細かいフィルタ
+      interval: -1             # 10フレームごとに保存（メモリ効率）
+      # interval = -1 の場合はすべてのフレームを1つのPCDファイルに保存するため、メモリオーバーフローに注意
