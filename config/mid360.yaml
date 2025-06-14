@@ -10,8 +10,7 @@
       ros_driver_bug_fix: false  # ROSドライバの不具合修正を行う場合はtrue
 
     extrin_calib:  # 外部キャリブレーション（要実測値調整）
-      # IMU-LiDAR間の外部パラメータ（MID360では通常同一座標系）
-      extrinsic_T: [0.0, 0.0, 0.0]  # MID360ではIMUとLiDARが同一位置
+      extrinsic_T: [0.011, 0.02329, -0.04412]
       extrinsic_R: [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0] 
       # カメラ-LiDAR間の外部パラメータ（実測値）
       Rcl: [0.00610193,-0.999863,-0.0154172,
@@ -35,8 +34,8 @@
       max_iterations: 5        # ZEDの高解像度に対応して増加
       outlier_threshold: 1000   # より厳しい外れ値除去
       img_point_cov: 100        # ZEDの高品質画像に対応
-      patch_size: 8            # 高解像度に適したパッチサイズ
-      patch_pyrimid_level: 4   # ピラミッドレベル増加
+      patch_size: 4            # 高解像度に適したパッチサイズ
+      patch_pyrimid_level: 3   # ピラミッドレベル増加
       normal_en: true
       raycast_en: false         # 高密度点群で有効化
       inverse_composition_en: false
@@ -58,20 +57,20 @@
       min_eigen_value: 0.0025   # 安定性向上
       voxel_size: 0.5          # 高密度点群に適したボクセルサイズ
       max_layer: 2             # レイヤー数増加
-      max_points_num: 50       # MID360の高密度点群に対応
-      layer_init_num: [5, 5, 5, 5, 5]  # 各レイヤーの初期点数増加
+      max_points_num: 80       # MID360の高密度点群に対応
+      layer_init_num: [4, 4, 4, 4, 4]  # 各レイヤーの初期点数増加
 
     local_map:
       map_sliding_en: false     # 高密度データのためスライディング有効化
-      half_map_size: 100        # マップサイズ調整
-      sliding_thresh: 8.0      # スライディング閾値調整
+      half_map_size: 40        # マップサイズ調整
+      sliding_thresh: 3.0      # スライディング閾値調整
 
     uav:
       imu_rate_odom: false      # 高周波数IMUのため有効化
       gravity_align_en: false   # 初期化安定性向上
 
     publish:
-      dense_map_en: true
+      dense_map_en: false
       pub_effect_point_en: false    # デバッグ用に有効化
       pub_plane_en: false           # 平面検出確認用
       pub_scan_num: 1
